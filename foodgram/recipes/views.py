@@ -1,12 +1,11 @@
-import datetime
+from django.db.models import Sum
+from django.http import HttpResponse
 
-from django.shortcuts import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from recipes.pagination import LimitPaginaton
 from recipes.filters import IngredientSearchFilter, RecipeFilter
@@ -55,7 +54,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return self.serializer_classes.get(self.action,
                                            self.default_serializer_class)
 
-    def _favorite_shopping_post_delete(self, related_manager):
+    def _favorite_shopping_delete(self, related_manager):
         recipe = self.get_object()
         if self.request.method == 'DELETE':
             related_manager.get(recipe_id=recipe.id).delete()
@@ -82,32 +81,25 @@ class RecipesViewSet(viewsets.ModelViewSet):
             request.user.shopping_user
         )
 
-
-class DownloadShoppingCart(APIView):
-
-    permission_classes = [permissions.IsAuthenticated],
-
-    def get(self, request):
-        shopping_list = {}
+    @action(detail=False,
+            permission_classes=[permissions.IsAuthenticated],
+            methods=['GET'], )
+    def download_shopping_cart(self, request, pk=None):
         ingredients = RecipeIngredient.objects.filter(
-            recipe__purchases__user=request.user
+            recipe__user_shopping_user__user=request.user.id
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+        shopping_cart = ['Список:\n--------------']
+        for position, ingredient in enumerate(ingredients, start=1):
+            shopping_cart.append(
+                f'\n{position}. {ingredient["ingredient__name"]}:'
+                f' {ingredient["amount"]}'
+                f'({ingredient["ingredient__measurement_unit"]})'
+            )
+        response = HttpResponse(shopping_cart, content_type='text')
+        response['Content-Disposition'] = (
+            'attachment;filename=list.pdf'
         )
-        for ingredient in ingredients:
-            amount = ingredient.amount
-            name = ingredient.ingredient.name
-            measurement_unit = ingredient.ingredient.measurement_unit
-            if name not in shopping_list:
-                shopping_list[name] = {
-                    'measurement_unit': measurement_unit,
-                    'amount': amount
-                }
-            else:
-                shopping_list[name]['amount'] += amount
-        main_list = ([f"* {item}:{value['amount']}"
-                      f"{value['measurement_unit']}\n"
-                      for item, value in shopping_list.items()])
-        today = datetime.date.today()
-        main_list.append(f'\n, {today.year}')
-        response = HttpResponse(main_list, 'Content-Type: text/plain')
-        response['Content-Disposition'] = 'attachment; filename="list.txt"'
         return response
