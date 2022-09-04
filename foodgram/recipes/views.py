@@ -1,12 +1,16 @@
+import datetime
+
+from django.shortcuts import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from recipes.pagination import LimitPaginaton
 from recipes.filters import IngredientSearchFilter, RecipeFilter
-from recipes.models import (Ingredient, Recipe, Tag,)
+from recipes.models import (Ingredient, Recipe, Tag, RecipeIngredient)
 from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrAdmin
 from recipes.serializers import (
     RecipeAddSerializer,
@@ -77,3 +81,33 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return self._favorite_shopping_post_delete(
             request.user.shopping_user
         )
+
+
+class DownloadShoppingCart(APIView):
+
+    permission_classes = [permissions.IsAuthenticated],
+
+    def get(self, request):
+        shopping_list = {}
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__purchases__user=request.user
+        )
+        for ingredient in ingredients:
+            amount = ingredient.amount
+            name = ingredient.ingredient.name
+            measurement_unit = ingredient.ingredient.measurement_unit
+            if name not in shopping_list:
+                shopping_list[name] = {
+                    'measurement_unit': measurement_unit,
+                    'amount': amount
+                }
+            else:
+                shopping_list[name]['amount'] += amount
+        main_list = ([f"* {item}:{value['amount']}"
+                      f"{value['measurement_unit']}\n"
+                      for item, value in shopping_list.items()])
+        today = datetime.date.today()
+        main_list.append(f'\n, {today.year}')
+        response = HttpResponse(main_list, 'Content-Type: text/plain')
+        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        return response

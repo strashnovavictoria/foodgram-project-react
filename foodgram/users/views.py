@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from recipes.pagination import LimitPaginaton
-from .models import Follow, User
+from users.models import Follow, User
 from .serializers import FollowSerializer
 
 
@@ -27,7 +27,7 @@ def follow_author(request, pk):
         try:
             Follow.objects.create(user=user, author=author)
         except IntegrityError:
-            content = {'errors': 'Вы уже подписаны на данного автора'}
+            content = {'errors': 'Вы уже подписаны на автора'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         follows = User.objects.all().filter(username=author)
         serializer = FollowSerializer(
