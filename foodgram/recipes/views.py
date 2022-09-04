@@ -109,5 +109,5 @@ class DownloadShoppingCart(APIView):
         today = datetime.date.today()
         main_list.append(f'\n, {today.year}')
         response = HttpResponse(main_list, 'Content-Type: text/plain')
-        response['Content-Disposition'] = 'attachment; filename="shopping_list.txt"'
+        response['Content-Disposition'] = 'attachment; filename="list.txt"'
         return response
