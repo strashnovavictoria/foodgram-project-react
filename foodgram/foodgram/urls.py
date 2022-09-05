@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-
 api_patterns = [
     path('', include('users.urls', namespace='api_users')),
     path('', include('recipes.urls', namespace='api_recipes')),
