@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -69,7 +68,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+
 
 # PyBuilder
 target/
@@ -137,3 +136,17 @@ dmypy.json
 .idea
 
 media/
+
+
+[flake8]
+ignore =
+    W503,
+    F811
+exclude =
+    tests/,
+    */migrations/,
+    venv/,
+    env/
+per-file-ignores =
+    */settings.py:E501
+max-complexity = 10

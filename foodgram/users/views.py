@@ -8,8 +8,8 @@ from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from recipes.pagination import LimitPaginaton
-from users.models import Follow, User
+from recipes.pagination import LimitPageNumberPaginator
+from .models import Follow, User
 from .serializers import FollowSerializer
 
 
@@ -27,7 +27,7 @@ def follow_author(request, pk):
         try:
             Follow.objects.create(user=user, author=author)
         except IntegrityError:
-            content = {'errors': 'Вы уже подписаны на автора'}
+            content = {'errors': 'Вы уже подписаны на данного автора'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         follows = User.objects.all().filter(username=author)
         serializer = FollowSerializer(
@@ -52,7 +52,7 @@ class SubscriptionListView(viewsets.ReadOnlyModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = FollowSerializer
-    pagination_class = LimitPaginaton
+    pagination_class = LimitPageNumberPaginator
     filter_backends = (filters.SearchFilter,)
     permission_classes = (permissions.IsAuthenticated,)
     search_fields = ('^following__user',)

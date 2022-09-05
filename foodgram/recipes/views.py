@@ -7,54 +7,37 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from recipes.pagination import LimitPaginaton
-from recipes.filters import IngredientSearchFilter, RecipeFilter
-from recipes.models import (Ingredient, Recipe, Tag, RecipeIngredient)
-from recipes.permissions import IsAdminOrReadOnly, IsAuthorOrAdmin
-from recipes.serializers import (
-    RecipeAddSerializer,
+from .pagination import LimitPageNumberPaginator
+from .filters import IngredientFilter, RecipeFilter
+from .models import Ingredient, Recipe, Tag, RecipeIngredient
+from .permissions import IsAdminOrReadOnly, IsAuthorOrAdmin
+from .serializers import (
+    AddRecipeSerializer,
     IngredientSerializer,
     RecipeSerializer,
-    RecipeShowSerializer,
+    ShowRecipeSerializer,
     TagSerializer
 )
-
-
-class TagsViewSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    pagination_class = None
-    permission_classes = (IsAdminOrReadOnly,)
-
-
-class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
-
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    pagination_class = None
-    filter_backends = (IngredientSearchFilter,)
-    search_fields = ('^name',)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_classes = {
-        'retrieve': RecipeShowSerializer,
-        'list': RecipeShowSerializer,
+        'retrieve': ShowRecipeSerializer,
+        'list': ShowRecipeSerializer,
     }
-    default_serializer_class = RecipeAddSerializer
+    default_serializer_class = AddRecipeSerializer
     permission_classes = (IsAuthorOrAdmin,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
-    pagination_class = LimitPaginaton
+    pagination_class = LimitPageNumberPaginator
 
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action,
                                            self.default_serializer_class)
 
-    def _favorite_shopping_delete(self, related_manager):
+    def _favorite_shopping_post_delete(self, related_manager):
         recipe = self.get_object()
         if self.request.method == 'DELETE':
             related_manager.get(recipe_id=recipe.id).delete()
@@ -81,12 +64,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
             request.user.shopping_user
         )
 
-    @action(detail=False,
-            permission_classes=[permissions.IsAuthenticated],
-            methods=['GET'], )
+    @action(detail=False, methods=['get'],)
     def download_shopping_cart(self, request, pk=None):
         ingredients = RecipeIngredient.objects.filter(
-            recipe__user_shopping_user__user=request.user.id
+            recipe__shopping_recipe__user=request.user.id
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
@@ -103,3 +84,20 @@ class RecipesViewSet(viewsets.ModelViewSet):
             'attachment;filename=list.pdf'
         )
         return response
+
+
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    pagination_class = None
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    pagination_class = None
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter

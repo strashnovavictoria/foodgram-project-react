@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from recipes.fields import HexColorField
+from .fields import HexColorField
 
 User = get_user_model()
 
@@ -103,7 +103,7 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         validators=(MinValueValidator(
             1,
-            message='время должно быть больше нуля.',
+            message='Укажите время больше нуля!',
         ),),
         verbose_name=_('Время приготовления'),
         help_text='Задайте время приготовления блюда',

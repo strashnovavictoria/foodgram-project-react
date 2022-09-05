@@ -19,7 +19,7 @@ class User(AbstractUser):
         unique=True,
         blank=False,
         error_messages={
-            'unique': _('Неуникальный email.'),
+            'unique': _('Пользователь с таким email уже существует!'),
         },
         help_text=_('Укажите свой email'),
     )
@@ -28,7 +28,7 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         error_messages={
-            'unique': _('Неуникальный никнейм.'),
+            'unique': _('Пользователь с таким никнеймом уже существует!'),
         },
         help_text=_('Укажите свой никнейм'),
     )

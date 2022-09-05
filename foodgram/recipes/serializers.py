@@ -67,7 +67,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'image', 'cooking_time')
 
 
-class RecipeShowSerializer(serializers.ModelSerializer):
+class ShowRecipeSerializer(serializers.ModelSerializer):
 
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
@@ -104,7 +104,7 @@ class RecipeShowSerializer(serializers.ModelSerializer):
                                            user=request.user).exists()
 
 
-class IngredientAddRecipeSerializer(serializers.ModelSerializer):
+class AddIngredientRecipeSerializer(serializers.ModelSerializer):
 
     id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField()
@@ -114,9 +114,9 @@ class IngredientAddRecipeSerializer(serializers.ModelSerializer):
         fields = ('id', 'amount')
 
 
-class RecipeAddSerializer(serializers.ModelSerializer):
+class AddRecipeSerializer(serializers.ModelSerializer):
 
-    ingredients = IngredientAddRecipeSerializer(many=True)
+    ingredients = AddIngredientRecipeSerializer(many=True)
     tags = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(),
                                               many=True)
     image = Base64ImageField()
@@ -134,17 +134,17 @@ class RecipeAddSerializer(serializers.ModelSerializer):
 
         if not ingredients:
             raise ValidationError(
-                'Ингредиенты должны быть выбраны.'
+                'Необходимо выбрать ингредиенты!'
             )
         for ingredient in ingredients:
             if int(ingredient['amount']) <= 0:
                 raise ValidationError(
-                    'Количество больше нуля.'
+                    'Количество ингредиентов должно быть больше нуля!'
                 )
         ids = [item['id'] for item in ingredients]
         if len(ids) != len(set(ids)):
             raise ValidationError(
-                'Только индивидуальные ингредиенты.'
+                'Ингредиенты в рецепте должны быть уникальными!'
             )
         return ingredients
 
@@ -152,7 +152,7 @@ class RecipeAddSerializer(serializers.ModelSerializer):
     def validate_cooking_time(value):
         if value <= 0:
             raise ValidationError(
-                'Время не должно быть меньше нуля.'
+                'Время приготовления должно быть больше нуля!'
             )
         return value
 
@@ -189,13 +189,13 @@ class RecipeAddSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def to_representation(self, recipe):
-        data = RecipeShowSerializer(
+        data = ShowRecipeSerializer(
             recipe,
             context={'request': self.context.get('request')}).data
         return data
 
 
-class FavoriteRecipeShopSerializer(serializers.ModelSerializer):
+class ShowFavoriteRecipeShopListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
@@ -224,14 +224,14 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         if FavoriteRecipe.objects.filter(user=user,
                                          recipe__id=recipe_id).exists():
             raise ValidationError(
-                'Рецепт в избранном.'
+                'Рецепт уже добавлен в избранное!'
             )
         return data
 
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
-        return FavoriteRecipeShopSerializer(
+        return ShowFavoriteRecipeShopListSerializer(
             instance.recipe,
             context=context
         ).data
@@ -250,13 +250,15 @@ class ShoppingListSerializer(serializers.ModelSerializer):
         recipe_id = data['recipe'].id
         if ShoppingList.objects.filter(user=user,
                                        recipe__id=recipe_id).exists():
-            raise ValidationError('Рецепт уже в корзине.')
+            raise ValidationError(
+                'Рецепт уже добавлен в корзину!'
+            )
         return data
 
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
-        return FavoriteRecipeShopSerializer(
+        return ShowFavoriteRecipeShopListSerializer(
             instance.recipe,
             context=context
         ).data
