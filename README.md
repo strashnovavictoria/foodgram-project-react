@@ -4,47 +4,32 @@ Foodgram - Продуктовый помощник. Это онлайн-серв
 **
 ### Как запустить проект:
 
-Клонировать репозиторий и перейти в него в командной строке:
+Установите Docker и Docker-compose на ВМ:
 
-```
-git clone https://github.com/strashnovavictoria/foodgram-project-react.git
-```
+sudo apt install docker.io
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
 
-```
-cd foodgram
-```
 
-Cоздать и активировать виртуальное окружение:
+Проверьте корректность установки Docker-compose:
 
-```
-python3 -m venv env
-```
+sudo  docker-compose --version
 
-```
-source venv/scripts/activate
-```
 
-Установить зависимости из файла requirements.txt:
+После успешного деплоя:
+Соберите статические файлы (статику):
 
-```
-python3 -m pip install --upgrade pip
-```
+docker-compose exec web python manage.py collectstatic --no-input
 
-```
-pip install -r requirements.txt
-```
+Примените миграции:
 
-Выполнить миграции:
+docker-compose exec web python manage.py makemigrations
+docker-compose exec web python manage.py migrate --noinput
 
-```
-python3 manage.py migrate
-```
+Создайте суперпользователя:
 
-Запустить проект:
+docker-compose exec web python manage.py createsuperuser
 
-```
-python3 manage.py runserver
-```
 ***
 ### Используемые технологии:
 
@@ -75,4 +60,4 @@ GitHub Actions
 https://foodgram-sva.servehttp.com/ http://51.250.100.90/admin/ 
 
 
-здесь будет ваше гитфлоу
+[![Django-app workflow](https://github.com/strashnovavictoria/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/strashnovavictoria/foodgram-project-react/actions/workflows/main.yml)
