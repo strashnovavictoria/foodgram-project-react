@@ -69,11 +69,7 @@ jobs:
             sudo docker-compose up -d
             sudo docker-compose exec web python manage.py makemigrations
             sudo docker-compose exec web python manage.py migrate
-<<<<<<< HEAD
             sudo docker-compose exec web python manage.py collectstatic --no-input
-=======
-            ssudo docker-compose exec web python manage.py collectstatic --no-input
->>>>>>> 2911d5c2546409456a71edd58cc4dc70d407cd45
             
   send_message:
     runs-on: ubuntu-latest
