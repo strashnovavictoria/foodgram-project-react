@@ -21,7 +21,7 @@ python3 -m venv env
 ```
 
 ```
-source env/bin/activate
+source venv/scripts/activate
 ```
 
 Установить зависимости из файла requirements.txt:
@@ -48,9 +48,31 @@ python3 manage.py runserver
 ***
 ### Используемые технологии:
 
+Ubuntu
+Python
+Django
+Django REST Framework
+PostgreSQL
+Yandex.Cloud
+JWT
+Nginx
+gunicorn
+Docker
+Docker-compose
+Docker Hub
+GitHub Actions
+
 
 
 ***
 ### Автор:
 - Виктория Страшнова [strashnovavictoria](https://github.com/strashnovavictoria)
 
+
+
+### Развёрнутый проект:
+
+https://foodgram-sva.servehttp.com/ http://51.250.100.90/admin/ 
+
+
+здесь будет ваше гитфлоу
