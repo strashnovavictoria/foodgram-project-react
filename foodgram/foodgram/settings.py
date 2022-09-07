@@ -28,7 +28,7 @@ SECRET_KEY = 'str'
 DEBUG = False
 
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = ['84.201.142.187', 'localhost', '127.0.0.1', 'foodgram-sva.sytes.net']
 
 
 INSTALLED_APPS = [

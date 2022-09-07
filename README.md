@@ -57,7 +57,7 @@ GitHub Actions
 ***
 ### Развёрнутый проект:
 
-https://foodgram-sva.servehttp.com/ http://51.250.100.90/admin/ 
+https://foodgram-sva.sytes.net/ http://84.201.142.187/admin/ 
 
 
 [![Django-app workflow](https://github.com/strashnovavictoria/foodgram-project-react/actions/workflows/main.yml/badge.svg)](https://github.com/strashnovavictoria/foodgram-project-react/actions/workflows/main.yml)
