@@ -23,7 +23,7 @@ SECRET_KEY = 'dev'
 
 DEBUG = True
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'str'
 
 DEBUG = False
 
