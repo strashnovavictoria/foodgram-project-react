@@ -10,7 +10,7 @@ services:
       - ./.env
 
   web:
-    image: strashnovavictoria/foodgram-back:latest
+    image: strashnovavictoria/backend:latest
     restart: always
     volumes:
       - static_value:/app/static/
