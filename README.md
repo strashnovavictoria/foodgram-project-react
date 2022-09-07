@@ -15,8 +15,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 sudo  docker-compose --version
 
-
 После успешного деплоя:
+
 Соберите статические файлы (статику):
 
 docker-compose exec web python manage.py collectstatic --no-input
@@ -54,7 +54,7 @@ GitHub Actions
 - Виктория Страшнова [strashnovavictoria](https://github.com/strashnovavictoria)
 
 
-
+***
 ### Развёрнутый проект:
 
 https://foodgram-sva.servehttp.com/ http://51.250.100.90/admin/ 
