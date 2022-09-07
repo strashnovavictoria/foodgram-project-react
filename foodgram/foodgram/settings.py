@@ -22,7 +22,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'dev'
+#os.getenv('SECRET_KEY')
 
 DEBUG = False
 
