@@ -22,13 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'dev'
 
 
 DEBUG = False
 
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = ['84.201.142.187.', 'foodgram-sva.sytes.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
