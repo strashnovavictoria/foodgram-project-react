@@ -51,13 +51,7 @@ GitHub Actions
 
 ***
 ### Автор:
-- Виктория Страшнова [strashnovavictoria](https://github.com/strashnovavictoria)
-
-
-***
-### Развёрнутый проект:
-
-[https://foodgram-sva.sytes.net/](http://foodgram-sva.sytes.net/) [http://84.201.142.187/admin/](http://84.201.142.187/admin/) 
+Страшнова Виктория 
 
 
 
