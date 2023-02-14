@@ -21,7 +21,7 @@ services:
       - ./.env
 
   frontend:
-    image: strashnovavictoria/frontend:latest
+    image: strashnovavictoria/frontend:v2
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
